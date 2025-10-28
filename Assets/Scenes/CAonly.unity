@@ -271,7 +271,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 256
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -296,7 +296,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 256, y: 256, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -553,7 +553,7 @@ MonoBehaviour:
   solidTile: {fileID: 11400000, guid: 6d31b8e197912f7cfa96fa15257e24be, type: 2}
   tileOrigin: {x: 0, y: 0, z: 0}
   clearBeforePainting: 1
-  mapSize: {x: 512, y: 512}
+  MapSize: {x: 512, y: 512}
   wrapHorizontalEdges: 0
   wrapVerticalEdges: 0
   keepBorderWalls: 1
