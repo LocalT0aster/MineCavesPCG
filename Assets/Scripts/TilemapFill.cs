@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+/// Utility component that fills a rectangular region of a tilemap with a specified tile.
 [RequireComponent(typeof(Tilemap))]
 public class TilemapFill : MonoBehaviour {
     private Tilemap _tilemap;
@@ -8,13 +9,17 @@ public class TilemapFill : MonoBehaviour {
     [SerializeField] private bool fillByDefault;
     [SerializeField] private Vector2Int fillFrom = Vector2Int.zero;
     [SerializeField] private Vector2Int fillTo = Vector2Int.one;
-
+    
+    /// Caches the tilemap reference and optionally fills the default region.
     private void Start() {
         _tilemap = GetComponent<Tilemap>();
         if (fillByDefault)
             Fill(fillFrom, fillTo);
     }
-
+    
+    /// Fills all cells inside the inclusive rectangular region with the configured tile.
+    /// <param name="from">One corner of the rectangle.</param>
+    /// <param name="to">The opposite corner of the rectangle.</param>
     public void Fill(Vector2Int from, Vector2Int to) {
         if (_tilemap == null) {
             Debug.LogWarning($"{nameof(TilemapFill)} on {name} has no Tilemap assigned.");
