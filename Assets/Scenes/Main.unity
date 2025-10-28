@@ -258,6 +258,7 @@ MonoBehaviour:
   cellularAutomata: {fileID: 90908888}
   drunkardsWalk: {fileID: 90908890}
   railTileReplacer: {fileID: 90908891}
+  player: {fileID: 2132383366}
   generateOnStart: 1
   randomizeDrunkardSeed: 1
   drunkardSeed: 0

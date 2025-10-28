@@ -11,7 +11,8 @@ public class CameraZoom : MonoBehaviour {
     [SerializeField, Min(0.01f)] private float zoomStep = 50f;
 
     private Camera _camera;
-.
+
+    /// Stores the camera reference and validates orthographic settings.
     private void Awake() {
         _camera = GetComponent<Camera>();
 

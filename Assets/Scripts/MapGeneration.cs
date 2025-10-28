@@ -9,6 +9,7 @@ public class MapGeneration : MonoBehaviour {
     [SerializeField] private CellularAutomata cellularAutomata;
     [SerializeField] private DrunkardsWalk drunkardsWalk;
     [SerializeField] private RailTileReplacer railTileReplacer;
+    [SerializeField, Tooltip("For player placement.")] private PlayerController player;
 
     [Header("Execution Settings")]
     [SerializeField] private bool generateOnStart = true;
@@ -59,5 +60,28 @@ public class MapGeneration : MonoBehaviour {
 
             railTileReplacer.UpdateRailTiles();
         }
+
+        PlacePlayer(map, cellularAutomata.TileOrigin);
+    }
+
+    /// Finds a clear tile and teleports the player to that position.
+    private void PlacePlayer(bool[,] map, Vector3Int origin) {
+        if (player == null) {
+            return;
+        }
+
+        for (int x = 1; x < map.GetLength(0) - 1; x++) {
+            for (int y = 1; y < map.GetLength(1) - 1; y++) {
+                if (map[x, y]) {
+                    continue;
+                }
+
+                Vector3 worldPosition = new(origin.x + x + 0.5f, origin.y + y + 0.5f, player.transform.position.z);
+                player.transform.position = worldPosition;
+                return;
+            }
+        }
+
+        Debug.LogWarning($"{nameof(MapGeneration)} on {name} could not find a free tile for the player.");
     }
 }
