@@ -1,16 +1,14 @@
 using UnityEngine;
 
-/// <summary>
-/// Coordinates cellular automata cave generation followed by a drunkard's walk corridor pass.
-/// </summary>
+/// Coordinates cellular automata cave generation followed by drunkard-carved corridors and rail tile cleanup.
 public class MapGeneration : MonoBehaviour {
     [Header("Map Settings")]
-    
     [SerializeField] private Vector2Int mapSize = new(512, 512);
-    
+
     [Header("Generation Steps")]
     [SerializeField] private CellularAutomata cellularAutomata;
     [SerializeField] private DrunkardsWalk drunkardsWalk;
+    [SerializeField] private RailTileReplacer railTileReplacer;
 
     [Header("Execution Settings")]
     [SerializeField] private bool generateOnStart = true;
@@ -23,9 +21,7 @@ public class MapGeneration : MonoBehaviour {
         }
     }
 
-    /// <summary>
-    /// Generates caves via cellular automata and then carves corridors with the drunkard's walk.
-    /// </summary>
+    /// Runs the full map generation pipeline.
     public void Generate() {
         if (cellularAutomata == null) {
             Debug.LogWarning($"{nameof(MapGeneration)} on {name} has no {nameof(cellularAutomata)} assigned.");
@@ -46,15 +42,22 @@ public class MapGeneration : MonoBehaviour {
             return;
         }
 
-        drunkardsWalk.MapSize = mapSize;
         if (drunkardsWalk.CaveTilemap == null) {
             drunkardsWalk.SetCaveTilemap(cellularAutomata.TargetTilemap);
         }
 
         System.Random rng = randomizeDrunkardSeed
-            ? new System.Random(Random.Range(int.MinValue, int.MaxValue))
+            ? new System.Random(UnityEngine.Random.Range(int.MinValue, int.MaxValue))
             : new System.Random(drunkardSeed);
 
         drunkardsWalk.CarveCorridors(map, cellularAutomata.TileOrigin, rng);
+
+        if (railTileReplacer != null && railTileReplacer.isActiveAndEnabled) {
+            if (railTileReplacer.RailTilemap == null) {
+                railTileReplacer.SetRailTilemap(drunkardsWalk.RailTilemap);
+            }
+
+            railTileReplacer.UpdateRailTiles();
+        }
     }
 }

@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-/// <summary>
+
 /// Carves three-wide corridors through a cave map using a constrained drunkard's walk and paints rails along the centre lane.
-/// </summary>
 [DisallowMultipleComponent]
 public class DrunkardsWalk : MonoBehaviour {
     private static readonly Vector2Int[] CardinalDirections = {
@@ -41,24 +40,25 @@ public class DrunkardsWalk : MonoBehaviour {
     [SerializeField, Min(1)] private int openPreferenceWeight = 1;
     [SerializeField, Min(0)] private int forwardPreferenceBonus = 2;
 
-    private readonly Dictionary<Vector2Int, Vector2Int> railOrientation = new Dictionary<Vector2Int, Vector2Int>();
-
-    /// <summary>
+    private readonly Dictionary<Vector2Int, Vector2Int> railOrientation = new();
     /// Provides access to the currently assigned cave tilemap.
-    /// </summary>
     public Tilemap CaveTilemap => caveTilemap;
+    /// Provides access to the rail tilemap used for painting tracks.
+    public Tilemap RailTilemap => railTilemap;
 
-    /// <summary>
     /// Assigns the tilemap used when carving corridors if it is not already configured.
-    /// </summary>
     /// <param name="tilemap">Tilemap that contains the cellular automata output.</param>
     public void SetCaveTilemap(Tilemap tilemap) {
         caveTilemap = tilemap;
     }
 
-    /// <summary>
+    /// Assigns the tilemap used for rails.
+    /// <param name="tilemap">Tilemap that should receive rail tiles.</param>
+    public void SetRailTilemap(Tilemap tilemap) {
+        railTilemap = tilemap;
+    }
+
     /// Executes the drunkard's walk, carving three-tile-wide corridors through the supplied map data.
-    /// </summary>
     /// <param name="map">Map data where true indicates a solid cell.</param>
     /// <param name="tileOrigin">Origin offset applied when writing to tilemaps.</param>
     /// <param name="rng">Optional random source; if omitted a new <see cref="System.Random"/> is created.</param>
@@ -94,7 +94,7 @@ public class DrunkardsWalk : MonoBehaviour {
         var usedStarts = new List<Vector2Int>();
 
         for (int i = 0; i < drunkardCount; i++) {
-            if (!TryFindStart(map, MapSize, usedStarts, rng, out Vector2Int start)) {
+            if (!TryFindStart(map, usedStarts, rng, out Vector2Int start)) {
                 break;
             }
 
@@ -183,15 +183,15 @@ public class DrunkardsWalk : MonoBehaviour {
         return true;
     }
 
-    private bool TryFindStart(bool[,] map, Vector2Int size, List<Vector2Int> usedStarts, System.Random rng, out Vector2Int start) {
-        Vector2Int center = new Vector2Int(size.x / 2, size.y / 2);
-        int searchRadiusX = Mathf.Max(1, size.x / 4);
-        int searchRadiusY = Mathf.Max(1, size.y / 4);
+    private bool TryFindStart(bool[,] map, List<Vector2Int> usedStarts, System.Random rng, out Vector2Int start) {
+        Vector2Int center = new(MapSize.x / 2, MapSize.y / 2);
+        int searchRadiusX = MapSize.x / 2;
+        int searchRadiusY = MapSize.y / 2;
 
         for (int attempt = 0; attempt < startSearchAttempts; attempt++) {
-            int x = Mathf.Clamp(center.x + rng.Next(-searchRadiusX, searchRadiusX + 1), 0, size.x - 1);
-            int y = Mathf.Clamp(center.y + rng.Next(-searchRadiusY, searchRadiusY + 1), 0, size.y - 1);
-            Vector2Int candidate = new Vector2Int(x, y);
+            int x = Mathf.Clamp(center.x + rng.Next(-searchRadiusX, searchRadiusX + 1), 0, MapSize.x - 1);
+            int y = Mathf.Clamp(center.y + rng.Next(-searchRadiusY, searchRadiusY + 1), 0, MapSize.y - 1);
+            Vector2Int candidate = new(x, y);
 
             if (!map[candidate.x, candidate.y]) {
                 continue;
@@ -201,7 +201,7 @@ public class DrunkardsWalk : MonoBehaviour {
                 continue;
             }
 
-            int neighborCount = CountSolidNeighbors(map, candidate, size, startKernelRadius);
+            int neighborCount = CountSolidNeighbors(map, candidate, MapSize, startKernelRadius);
             if (neighborCount < startKernelThreshold) {
                 continue;
             }
@@ -253,7 +253,7 @@ public class DrunkardsWalk : MonoBehaviour {
     }
 
     private void CarveCorridorAt(Vector2Int centre, Vector2Int direction, bool[,] map, Vector3Int origin) {
-        Vector2Int perpendicular = new Vector2Int(-direction.y, direction.x);
+        Vector2Int perpendicular = new(-direction.y, direction.x);
         Vector2Int[] offsets = {
             Vector2Int.zero,
             perpendicular,
@@ -301,7 +301,7 @@ public class DrunkardsWalk : MonoBehaviour {
     }
 
     private bool IsParallelToRails(Vector2Int current, Vector2Int next, Vector2Int direction) {
-        Vector2Int perpendicular = new Vector2Int(-direction.y, direction.x);
+        Vector2Int perpendicular = new(-direction.y, direction.x);
         Vector2Int[] cellsToCheck = {
             next,
             next + perpendicular,
