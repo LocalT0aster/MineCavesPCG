@@ -34,7 +34,7 @@ public class CellularAutomata : MonoBehaviour {
 
     [Header("Map Settings")]
     
-    [SerializeField] private Vector2Int mapSize = new(512, 512);
+    [SerializeField] public Vector2Int MapSize = new(512, 512);
     [SerializeField] private bool wrapHorizontalEdges;
     [SerializeField] private bool wrapVerticalEdges;
     [SerializeField] private bool keepBorderWalls = true;
@@ -64,9 +64,7 @@ public class CellularAutomata : MonoBehaviour {
     [SerializeField] private bool autoGenerateOnStart = true;
 
     private bool[,] lastGeneratedMap;
-
-    /// Gets the configured map dimensions.
-    public Vector2Int MapSize => mapSize;
+    
     /// Gets the map produced during the last generation pass.
     public bool[,] LastGeneratedMap => lastGeneratedMap;
     /// Gets the tile origin used when writing to the target tilemap.
@@ -101,7 +99,7 @@ public class CellularAutomata : MonoBehaviour {
     /// Builds a cave map using white-noise seeding and region-specific cellular automata kernels.
     /// <returns>The generated cave map, where true represents a wall/solid.</returns>
     public bool[,] GenerateCaveData() {
-        Vector2Int clampedSize = new Vector2Int(Mathf.Max(1, mapSize.x), Mathf.Max(1, mapSize.y));
+        Vector2Int clampedSize = new Vector2Int(Mathf.Max(1, MapSize.x), Mathf.Max(1, MapSize.y));
 
         int width = clampedSize.x;
         int height = clampedSize.y;
