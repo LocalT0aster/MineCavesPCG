@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 /// Generates cave-like tilemaps using cellular automata seeded with white noise and Perlin-controlled kernel regions.
-[RequireComponent(typeof(Tilemap))]
 public class CellularAutomata : MonoBehaviour {
     /// Supported neighborhood kernel sizes for cellular automata smoothing.
     private enum KernelType {
@@ -77,8 +76,6 @@ public class CellularAutomata : MonoBehaviour {
 
     /// Optionally generates and paints caves on startup.
     private void Start() {
-        if (!targetTilemap)
-            targetTilemap = GetComponent<Tilemap>();
         if (autoGenerateOnStart)
             GenerateCaves();
     }
