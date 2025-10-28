@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour {
     private Vector2 _inputDirection;
     private float _mineTimer;
 
+    /// Enables input actions when the component is activated.
     private void OnEnable() {
         if (moveAction != null && moveAction.action != null)
             moveAction.action.Enable();
@@ -32,6 +33,7 @@ public class PlayerController : MonoBehaviour {
             mineAction.action.Enable();
     }
 
+    /// Disables input actions to avoid duplicate bindings.
     private void OnDisable() {
         if (moveAction != null && moveAction.action != null)
             moveAction.action.Disable();
@@ -84,6 +86,7 @@ public class PlayerController : MonoBehaviour {
         _inputDirection = Vector2.ClampMagnitude(_inputDirection, 1f);
     }
 
+    /// Places and rotates the pickaxe relative to the mouse cursor.
     private void UpdatePickaxeTransform() {
         if (!pickaxeTransform)
             return;
@@ -118,11 +121,13 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    /// Counts down the mining cooldown timer.
     private void HandleMiningTimer() {
         if (_mineTimer > 0f)
             _mineTimer -= Time.deltaTime;
     }
 
+    /// Processes mining input and triggers excavation when allowed.
     private void HandleMineInput() {
         bool isMining =
             (mineAction != null && mineAction.action != null && mineAction.action.ReadValue<float>() >= 0.5f) ||
@@ -138,6 +143,7 @@ public class PlayerController : MonoBehaviour {
             _mineTimer = miningCooldown;
     }
 
+    /// Attempts to remove a tile from the cave map at the pickaxe position.
     private bool TryMine() {
         if (caveTilemap == null) {
             Debug.LogWarning($"{nameof(PlayerController)} on {name} cannot mine without a cave tilemap reference.");

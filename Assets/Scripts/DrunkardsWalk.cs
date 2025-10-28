@@ -40,6 +40,7 @@ public class DrunkardsWalk : MonoBehaviour {
     [SerializeField, Min(1)] private int openPreferenceWeight = 1;
     [SerializeField, Min(0)] private int forwardPreferenceBonus = 2;
 
+    /// Unreliable
     private readonly Dictionary<Vector2Int, Vector2Int> railOrientation = new();
     /// Provides access to the currently assigned cave tilemap.
     public Tilemap CaveTilemap => caveTilemap;
@@ -109,6 +110,7 @@ public class DrunkardsWalk : MonoBehaviour {
         railTilemap.RefreshAllTiles();
     }
 
+    /// Moves the active drunkard through the cave while spending movement tokens.
     private void WalkDrunkard(Vector2Int start, Vector2Int direction, bool[,] map, Vector3Int origin, System.Random rng) {
         Vector2Int current = start;
         Vector2Int previousDirection = direction;
@@ -132,6 +134,7 @@ public class DrunkardsWalk : MonoBehaviour {
         }
     }
 
+    /// Chooses the next step direction using weighted randomness and rail-avoidance rules.
     private bool TrySelectDirection(Vector2Int current, Vector2Int previousDirection, bool[,] map, System.Random rng, out DirectionChoice choice) {
         var candidates = new List<DirectionChoice>();
 
@@ -183,6 +186,7 @@ public class DrunkardsWalk : MonoBehaviour {
         return true;
     }
 
+    /// Finds a viable starting position that satisfies spacing and solidity requirements.
     private bool TryFindStart(bool[,] map, List<Vector2Int> usedStarts, System.Random rng, out Vector2Int start) {
         Vector2Int center = new(MapSize.x / 2, MapSize.y / 2);
         int searchRadiusX = MapSize.x / 2;
@@ -214,6 +218,7 @@ public class DrunkardsWalk : MonoBehaviour {
         return false;
     }
 
+    /// Picks an initial heading that favours carving through solid terrain.
     private Vector2Int SelectInitialDirection(Vector2Int start, bool[,] map, System.Random rng) {
         var candidates = new List<DirectionChoice>();
 
@@ -252,6 +257,7 @@ public class DrunkardsWalk : MonoBehaviour {
         return candidates[candidates.Count - 1].Direction;
     }
 
+    /// Clears a three-wide corridor at the given location and writes a rail down the centre.
     private void CarveCorridorAt(Vector2Int centre, Vector2Int direction, bool[,] map, Vector3Int origin) {
         Vector2Int perpendicular = new(-direction.y, direction.x);
         Vector2Int[] offsets = {
@@ -273,6 +279,7 @@ public class DrunkardsWalk : MonoBehaviour {
         WriteRailTile(centre, origin, direction);
     }
 
+    /// Paints corridor floor tiles into the cave tilemap.
     private void WriteCorridorTile(Vector2Int cell, Vector3Int origin) {
         if (caveTilemap == null) {
             return;
@@ -282,6 +289,7 @@ public class DrunkardsWalk : MonoBehaviour {
         caveTilemap.SetTile(tilePosition, corridorTile);
     }
 
+    /// Stores rail orientation data and paints the rail tile to the rail tilemap.
     private void WriteRailTile(Vector2Int cell, Vector3Int origin, Vector2Int direction) {
         if (railOrientation.TryGetValue(cell, out Vector2Int existing)) {
             if (existing != Vector2Int.zero && existing != direction && existing != -direction) {
@@ -300,6 +308,7 @@ public class DrunkardsWalk : MonoBehaviour {
         railTilemap.SetTile(tilePosition, railTile);
     }
 
+    /// Detects whether moving in the chosen direction would create a rail that runs parallel to an existing one.
     private bool IsParallelToRails(Vector2Int current, Vector2Int next, Vector2Int direction) {
         Vector2Int perpendicular = new(-direction.y, direction.x);
         Vector2Int[] cellsToCheck = {
@@ -332,10 +341,12 @@ public class DrunkardsWalk : MonoBehaviour {
         return false;
     }
 
+    /// Confirms the provided coordinates lie within the bounds of the generated map.
     private static bool IsInside(Vector2Int cell, Vector2Int size) {
         return cell.x >= 0 && cell.x < size.x && cell.y >= 0 && cell.y < size.y;
     }
 
+    /// Verifies that the candidate position keeps enough distance from previously spawned drunkards.
     private static bool HasMinimumDistance(Vector2Int candidate, List<Vector2Int> points, int minimumDistance) {
         if (minimumDistance <= 0) {
             return true;
@@ -351,6 +362,7 @@ public class DrunkardsWalk : MonoBehaviour {
         return true;
     }
 
+    /// Counts solids within the supplied radius to evaluate start-area density.
     private int CountSolidNeighbors(bool[,] map, Vector2Int centre, Vector2Int size, int radius) {
         int count = 0;
 

@@ -11,7 +11,7 @@ public class CameraZoom : MonoBehaviour {
     [SerializeField, Min(0.01f)] private float zoomStep = 50f;
 
     private Camera _camera;
-
+.
     private void Awake() {
         _camera = GetComponent<Camera>();
 
@@ -22,10 +22,12 @@ public class CameraZoom : MonoBehaviour {
         minZoom = Mathf.Min(minZoom, maxZoom);
     }
 
+    /// Polls zoom input after all movement has completed.
     private void LateUpdate() {
         HandleZoom();
     }
 
+    /// Modifies the orthographic size in response to scroll wheel movement.
     private void HandleZoom() {
         if (!_camera.orthographic)
             return;

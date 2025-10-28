@@ -44,6 +44,7 @@ public class RailTileReplacer : MonoBehaviour {
     /// Returns the tilemap currently targeted by this replacer.
     public Tilemap RailTilemap => railTilemap;
 
+    /// Collects all rail tile positions into a reusable buffer.
     private void GatherRailCells() {
         _buffer.Clear();
 
@@ -55,6 +56,7 @@ public class RailTileReplacer : MonoBehaviour {
         }
     }
 
+    /// Iterates gathered cells and swaps tiles based on neighbour analysis.
     private void ApplyTiles() {
         foreach (Vector3Int cell in _buffer) {
             bool up = railTilemap.HasTile(cell + Vector3Int.up);
@@ -72,6 +74,7 @@ public class RailTileReplacer : MonoBehaviour {
         }
     }
 
+    /// Selects the appropriate tile asset for a given connectivity pattern.
     private TileBase ChooseTile(bool vertical, bool horizontal) {
         if (vertical && horizontal) {
             return intersectionTile ? intersectionTile : verticalTile ?? horizontalTile;
